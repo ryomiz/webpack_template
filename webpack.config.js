@@ -1,17 +1,28 @@
-const path = require('path')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+import url from 'url'
+import path from 'path'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+// build時には有効化
+// eslint-disable-next-line no-unused-vars
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
-module.exports = {
+import autoprefixer from 'autoprefixer'
+
+const __filename = url.fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+export default {
   // 本番環境ではproductionに設定
   mode: 'development',
   // Entry Point
   entry: './src/js/index.js',
   output: {
-    filename: 'js/main.js',
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'main.js',
   },
-
+  resolve: {
+    extensions: ['.js'],
+  },
   // ルールの設定
   // 1. babel
   // 2. postcss
@@ -26,9 +37,6 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-env'],
-            },
           },
         ],
       },
@@ -44,7 +52,7 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
-                plugins: ['autoprefixer'],
+                plugins: [autoprefixer({ grid: 'autoplace' })],
               },
             },
           },
@@ -68,11 +76,47 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/templates/index.html',
       filename: 'templates/index.html',
+      title: 'Webpack Test',
+      meta: [
+        { name: 'description', content: 'Description' },
+        {
+          name: 'twitter:card',
+          content: '',
+        },
+        {
+          name: 'twitter:site',
+          content: '',
+        },
+        {
+          property: 'og:title',
+          content: '',
+        },
+        {
+          property: 'og:description',
+          content: '',
+        },
+        {
+          property: 'og:type',
+          content: '',
+        },
+        {
+          property: 'og:url',
+          content: '', // 絶対パスを記載
+        },
+        {
+          property: 'og:image',
+          content: '', // 絶対パスを記載
+        },
+        {
+          property: 'og:site_name',
+          content: '',
+        },
+      ],
     }),
-    new CleanWebpackPlugin(),
+    // build時には有効化
+    // new CleanWebpackPlugin(),
   ],
   devServer: {
     contentBase: 'dist/templates',
-    open: true,
   },
 }
